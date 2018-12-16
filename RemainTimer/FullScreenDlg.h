@@ -33,5 +33,11 @@ public:
 	void calcTime();
 	CString m_strFilePath;
 	//afx_msg void OnPaint();
-	CRect m_rectSize;
+	CFont m_idcFont;
+	CFont m_colonFont;
+	void setControlFont();
+	void setControlPosition();
+	int setCompanyLogo();
+	CStatic m_picCompLogo;
+	CImage m_bmpBitmap;
 };

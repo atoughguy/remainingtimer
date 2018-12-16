@@ -27,6 +27,9 @@ CRemainTimerDlg::CRemainTimerDlg(CWnd* pParent /*=NULL*/)
 void CRemainTimerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_HOUR, m_idcHour);
+	DDX_Control(pDX, IDC_MIN, m_idcMin);
+	DDX_Control(pDX, IDC_SEC, m_idcSec);
 }
 
 BEGIN_MESSAGE_MAP(CRemainTimerDlg, CDialogEx)
@@ -49,6 +52,13 @@ BOOL CRemainTimerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	CString strTitle = _T("Remaining Timer");
+	CString strVersion = _T("0.0.0.1");
+	SetWindowText(strTitle + " " + strVersion);
+
+	m_idcHour.LimitText(2);
+	m_idcMin.LimitText(2);
+	m_idcSec.LimitText(2);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -117,17 +127,17 @@ void CRemainTimerDlg::OnBnClickedOk()
 	GetDlgItemText(IDC_MIN, strMin);
 	GetDlgItemText(IDC_SEC, strSec);
 
-	if (strHour == "" || _ttoi(strHour) > 24 && _ttoi(strHour) < 0)
+	if (strHour == "" || _ttoi(strHour) > 24 || _ttoi(strHour) < 0)
 	{
 		MessageBox(_T("Plesae insert hour(0~24)"));
 		return;
 	}
-	if (strMin == "" || _ttoi(strMin) > 59 && _ttoi(strMin) < 0)
+	if (strMin == "" || _ttoi(strMin) > 59 || _ttoi(strMin) < 0)
 	{
 		MessageBox(_T("Plesae insert minute(0~59)"));
 		return;
 	}
-	if (strSec == "" || _ttoi(strSec) > 59 && _ttoi(strSec) < 0)
+	if (strSec == "" || _ttoi(strSec) > 59 || _ttoi(strSec) < 0)
 	{
 		MessageBox(_T("Plesae insert second(0~59)"));
 		return;

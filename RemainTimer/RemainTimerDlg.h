@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // CRemainTimerDlg 대화 상자
@@ -34,4 +35,7 @@ public:
 	afx_msg void OnBnClickedFileOpen();
 	afx_msg void OnBnClickedOk();
 	CString m_strFilePath;
+	CEdit m_idcHour;
+	CEdit m_idcMin;
+	CEdit m_idcSec;
 };

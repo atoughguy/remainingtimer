@@ -6,6 +6,7 @@
 #include "FullScreenDlg.h"
 #include "afxdialogex.h"
 #include "RemainTimerDlg.h"
+#include <atlimage.h>
 
 
 // CFullScreenDlg dialog
@@ -30,6 +31,7 @@ void CFullScreenDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SET_HOUR, m_iSetHour);
+	DDX_Control(pDX, IDC_COMPANY_LOGO, m_picCompLogo);
 }
 
 
@@ -73,29 +75,15 @@ BOOL CFullScreenDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  Add extra initialization here
-	
 	SetDlgItemText(IDC_SET_HOUR, m_strSetHour);
 	SetDlgItemText(IDC_SET_MIN, m_strSetMin);
 	SetDlgItemText(IDC_SET_SEC, m_strSetSec);
 
-	// x, y, width, height
-	int idcWidth = 300;
-	int idcHeight = 100;
-	int colonWidth = 100;
-	int colonHeight = 100;
-	int idcXLocation = 0;
-	int idcYLocation = 0;
-	
-	GetWindowRect(m_rectSize); // get dialog size
-	idcXLocation = m_rectSize.Width.Size / 5;
-	idcYLocation = m_rectSize.Height.Size / 3;
+	setControlFont();
 
-	GetDlgItem(IDC_SET_HOUR)->MoveWindow(idcXLocation, idcYLocation, idcWidth, idcHeight);
-	GetDlgItem(IDC_COLON_1)->MoveWindow(idcXLocation + 100, idcYLocation, colonWidth, colonHeight);
-	GetDlgItem(IDC_SET_MIN)->MoveWindow(idcXLocation + 300, idcYLocation, idcWidth, idcHeight);
-	GetDlgItem(IDC_COLON_2)->MoveWindow(idcXLocation + 100, idcYLocation, colonWidth, colonHeight);
-	GetDlgItem(IDC_SET_SEC)->MoveWindow(idcXLocation + 300, idcYLocation, idcWidth, idcHeight);
+	setControlPosition();
 
+	// timer on
 	SetTimer(8, 100, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -109,6 +97,7 @@ void CFullScreenDlg::OnTimer(UINT_PTR nIDEvent)
 	switch (nIDEvent)
 	{
 	case 8:
+		setCompanyLogo();
 		calcTime();
 		break;
 	default:
@@ -164,7 +153,9 @@ void CFullScreenDlg::calcTime()
 	m_strSetSec.Format(_T("%d"), isec);
 
 	SetDlgItemText(IDC_SET_HOUR, m_strSetHour);
+	SetDlgItemText(IDC_COLON_1, _T(":"));
 	SetDlgItemText(IDC_SET_MIN, m_strSetMin);
+	SetDlgItemText(IDC_COLON_2, _T(":"));
 	SetDlgItemText(IDC_SET_SEC, m_strSetSec);
 
 	if (ihour == 0 && imin == 0 && isec == 0)
@@ -191,3 +182,86 @@ void CFullScreenDlg::OnPaint()
 	}
 }
 */
+
+void CFullScreenDlg::setControlFont()
+{
+	// set idc control font
+	m_idcFont.CreateFont(500, // height
+		200, // width
+		0,
+		0,
+		1, // weight
+		0,
+		0,
+		0,
+		0,
+		OUT_DEFAULT_PRECIS,
+		0,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		_T("±¼¸²"));
+
+	// set colon control font
+	m_colonFont.CreateFont(300, // height
+		80, // width
+		0,
+		0,
+		1, // weight
+		0,
+		0,
+		0,
+		0,
+		OUT_DEFAULT_PRECIS,
+		0,
+		DEFAULT_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		_T("±¼¸²"));
+
+	GetDlgItem(IDC_SET_HOUR)->SetFont(&m_idcFont);
+	GetDlgItem(IDC_SET_MIN)->SetFont(&m_idcFont);
+	GetDlgItem(IDC_SET_SEC)->SetFont(&m_idcFont);
+	GetDlgItem(IDC_COLON_1)->SetFont(&m_colonFont);
+	GetDlgItem(IDC_COLON_2)->SetFont(&m_colonFont);
+}
+
+
+void CFullScreenDlg::setControlPosition()
+{
+	RECT rc1;
+	::GetWindowRect(this->m_hWnd, &rc1);	// get dialog size
+											// set location of idc controls
+	int idcSetHourX = (rc1.right / 2) / 6;
+	int idcSetMinX = (rc1.right / 2) - (rc1.right / 10);
+	int idcSetSecX = (rc1.right / 2) + (rc1.right / 5);
+	int idcColon1X = ((rc1.right / 2) / 2) + (rc1.right / 12);
+	int idcColon2X = (rc1.right / 2) + (rc1.right / 7);
+	int idcSetY = (rc1.bottom / 2) - (rc1.bottom / 5);
+	int idcColonY = (rc1.bottom / 3) + (rc1.bottom / 12);
+	// width, height
+	int idcWidth = 450;
+	int idcHeight = 600;
+	int colonWidth = 80;
+	int colonHeight = 600;
+
+	// move idc controls
+	GetDlgItem(IDC_SET_HOUR)->MoveWindow(idcSetHourX, idcSetY, idcWidth, idcHeight);
+	GetDlgItem(IDC_COLON_1)->MoveWindow(idcColon1X, idcColonY, colonWidth, colonHeight);
+	GetDlgItem(IDC_SET_MIN)->MoveWindow(idcSetMinX, idcSetY, idcWidth, idcHeight);
+	GetDlgItem(IDC_COLON_2)->MoveWindow(idcColon2X, idcColonY, colonWidth, colonHeight);
+	GetDlgItem(IDC_SET_SEC)->MoveWindow(idcSetSecX, idcSetY, idcWidth, idcHeight);
+}
+
+
+int CFullScreenDlg::setCompanyLogo()
+{
+	CWnd *pWnd = (CWnd *)GetDlgItem(IDC_COMPANY_LOGO);
+	CDC *dc = pWnd->GetDC();
+	CStatic *pstatic = (CStatic *)GetDlgItem(IDC_COMPANY_LOGO);
+	CRect rect;
+
+	pstatic->GetClientRect(rect);
+	m_bmpBitmap.Load(m_strFilePath);
+	m_bmpBitmap.Draw(dc->m_hDC, 0, 0, m_bmpBitmap.GetWidth(), m_bmpBitmap.GetHeight());
+	
+	return 0;
+}
